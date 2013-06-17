@@ -8,7 +8,7 @@ module AsyncCallbacks::Mixin
   def method_missing(method, *args)
     if method.to_s =~ AsyncCallbacks::METHOD_REGEX
       vars = instance_variables
-      unless self.class.ancestors.include?(Promiscuous::Subscriber::Model::Observer)
+      unless defined?(Promiscuous) && self.class.ancestors.include?(Promiscuous::Subscriber::Model::Observer)
         vars = vars.select { |v| MONGOID_ATTRS.include?(v) }
       end
 
@@ -26,7 +26,7 @@ module AsyncCallbacks::Mixin
   private
 
   def finder
-    if self.is_a?(Promiscuous::Subscriber::Model::Observer)
+    if defined?(Promiscuous) && self.is_a?(Promiscuous::Subscriber::Model::Observer)
       "#{self.class}.new"
     elsif self.is_a?(Mongoid::Document)
       instance = self
